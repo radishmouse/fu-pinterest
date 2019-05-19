@@ -18,10 +18,13 @@ const setupAuth = (app) => {
     scope: ['read_public', 'read_relationships'],
   }, async (accessToken, refreshToken, profile, done) => {
     console.log('================================');
-    console.log(profile);
+    console.log(profile);    
     console.log('================================');
-
-    return done(null, profile);
+    console.log(accessToken);
+    return done(null, {
+      id: profile.id,
+      accessToken,
+    });
     // // TODO: replace this with code that finds the user
     // // in the database.
     // let theUser = await User.getByGithubId(profile.id);
@@ -50,7 +53,7 @@ const setupAuth = (app) => {
     //     "user": "1090173"
     //   }
     // }
-    done(null, user.id);
+    done(null, user);
 
     // Meaning, you can identify the user via:
     // req.session.passport.user
@@ -59,13 +62,13 @@ const setupAuth = (app) => {
   // #5 call passport.serializeUser
   // This configures how passport checks what's in the
   // session to see if the login is still valid.
-  passport.deserializeUser(function(id, done) {
+  passport.deserializeUser(function(user, done) {
     console.log('we are deserializing');
     // placeholder for custom user deserialization.
     // maybe you are going to get the user from mongo by id?
     // null is for errors
-    console.log(id);
-    done(null, id);
+    console.log(user);
+    done(null, user);
   });
 
   // #6 initialize passport middleware and register it with express

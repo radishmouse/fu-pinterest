@@ -12,6 +12,7 @@ const FileStore = require('session-file-store')(session);
 https.globalAgent.options.rejectUnauthorized = false;
 const setupAuth = require('./auth');
 
+const api = require('./api');
 
 const HTTP_PORT = process.env.PORT || 3000;
 const HTTPS_PORT = process.env.HTTPS_PORT || 3443;
@@ -31,10 +32,16 @@ app.use(session({
 setupAuth(app);
 
 
-app.get('/', (req, res) => {
-  res.send(`
+app.get('/', async (req, res) => {
+  if (req.isAuthenticated()) {
+    const {accessToken} = req.session.passport.user;
+    const boards = await api(accessToken).boards();
+    res.json(boards);
+  } else {    
+    res.send(`
 <a href="/login">login</a>
   `);
+  }
 });
 
 
