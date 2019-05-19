@@ -1,8 +1,18 @@
+require('dotenv').config();
+
 const express = require('express');
 const https = require('https');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+
+const session = require('express-session');
+const FileStore = require('session-file-store')(session);
+
+https.globalAgent.options.rejectUnauthorized = false;
+const setupAuth = require('./auth');
+
+
 const HTTP_PORT = process.env.PORT || 3000;
 const HTTPS_PORT = process.env.HTTPS_PORT || 3443;
 
@@ -13,9 +23,18 @@ const options = {
 
 const app = express();
 
+app.use(session({
+    store: new FileStore(),  // no options for now
+    secret: process.env.SESSION_SECRET
+}));
+
+setupAuth(app);
+
 
 app.get('/', (req, res) => {
-  res.send('so say we all');
+  res.send(`
+<a href="/login">login</a>
+  `);
 });
 
 
