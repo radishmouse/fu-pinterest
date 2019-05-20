@@ -25,7 +25,7 @@ const getPinInfoRoute = async (req, res) => {
     link: await resolveUrl(data.link)
   };
   res.json(pin);
-}
+};
 
 let pinterestRouter = express.Router();
 pinterestRouter.use(requireToken);

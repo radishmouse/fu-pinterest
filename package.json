@@ -5,7 +5,14 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --ignore sessions index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "db:create": "export $(cat .env | xargs) && createdb -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME",
+    "db:init": "export $(cat .env | xargs) && psql -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME -f schema.sql",
+    "db:seed": "export $(cat .env | xargs) && psql -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME -f seed.sql",
+    "db:destroy": "export $(cat .env | xargs) && dropdb -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME",
+    "db:reset": "npm run db:destroy; npm run db:create && npm run db:init && npm run db:seed",
+    "db:shell": "export $(cat .env | xargs) && psql -h $DB_HOST -p $DB_PORT -U $DB_USER $DB_NAME",
+    "test": "mocha",
+    "test:watch": "mocha -w"
   },
   "keywords": [],
   "author": "",
@@ -20,10 +27,13 @@
     "morgan": "^1.9.1",
     "passport": "^0.4.0",
     "passport-pinterest": "^1.0.0",
+    "pg-promise": "^8.7.2",
     "puppeteer": "^1.16.0",
     "session-file-store": "^1.2.0"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4",
     "nodemon": "^1.19.0"
   }
 }
