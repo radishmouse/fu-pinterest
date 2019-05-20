@@ -1,8 +1,10 @@
 const db = require('../db');
 
 module.exports = class Pin {
-  constructor(pin_id, note, link, img) {
+  constructor(pin_id, board_id, note, link, img) {
     this.pin_id = pin_id;
+    this.board_id = board_id;
+    
     this.note = note;
     this.link = link;
     this.img = img;
@@ -37,6 +39,11 @@ module.exports = class Pin {
     return Pin.from(result);
   }
 
+  static async getByBoardId(id) {
+    const results = await db.any(`select * from pins where board_id=$1`, [id]);
+    return results.length > 0 ? results.map(Pin.from) : [];
+  }
+  
   static async deleteById(id) {
     const result = await db.result(`delete from pins where id=$1`, [id]);
     return result;
@@ -50,11 +57,12 @@ module.exports = class Pin {
   async save() {
     const {id} = await db.one(`
 insert into pins
-  (pin_id, note, link, img)
+  (pin_id, board_id, note, link, img)
 values
-  ($1, $2, $3, $4)
+  ($1, $2, $3, $4, $5)
 returning id
-`, [this.pin_id, this.note, this.link, this.img]);
+`, [this.pin_id, this.board_id, this.note, this.link, this.img]);
+    this.id = id;
     return id;
   }
 };
