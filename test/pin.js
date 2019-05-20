@@ -129,4 +129,30 @@ describe(`Model: Pin`, () => {
       const result = await Pin.deleteById(p.id);
     });
   });
+  describe(`#getByPinterestBoardId`, async () => {
+    it(`should get all pins associated with a board`, async () => {
+      const beforeAdd = await Pin.getByPinterestBoardId('xyz999');
+      expect(beforeAdd).to.be.an('array');
+      expect(beforeAdd).to.have.length(0);
+      
+      const pin_id = String((new Date()).getTime());
+      const board_id = 2;
+      
+      const note = 'it was a good pin';
+      const link = 'https://not-real.com';
+      const img = 'https://not-real.com/example.png';
+      const p = new Pin(pin_id, board_id, note, link, img);
+      await p.save();
+
+      const afterAdd = await Pin.getByPinterestBoardId('xyz999');
+      expect(afterAdd).to.be.an('array');
+      expect(afterAdd).to.have.length(1);
+      for (let pin of afterAdd) {
+        expect(pin).to.be.an.instanceOf(Pin);
+      }
+
+      const result = await Pin.deleteById(p.id);
+    });
+  });
+  
 });

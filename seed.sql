@@ -1,7 +1,7 @@
 
 insert into boards
-  (name)
+  (name, board_id)
 values
-  ('lunch'),
-  ('dinner'),
-  ('party');
+  ('lunch', 'abc123'),
+  ('dinner', 'xyz999'),
+  ('party', 'lmnop');

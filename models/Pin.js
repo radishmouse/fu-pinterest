@@ -54,6 +54,13 @@ module.exports = class Pin {
     return Pin.from(result);
   }
 
+  static async getByPinterestBoardId(id) {
+    const results = await db.any(`
+select * from pins where board_id = (select id from boards where board_id=$1)
+`, [id]);
+    return results.length > 0 ? results.map(Pin.from) : [];
+  }
+
   async save() {
     const {id} = await db.one(`
 insert into pins

@@ -1,7 +1,10 @@
 
 create table boards (
   id serial primary key,
-  name text
+  name text,
+
+-- am I going to hate myself for calling it this?
+  board_id text  
 );
 
 create table pins (
