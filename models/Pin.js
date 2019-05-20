@@ -37,6 +37,16 @@ module.exports = class Pin {
     return Pin.from(result);
   }
 
+  static async deleteById(id) {
+    const result = await db.result(`delete from pins where id=$1`, [id]);
+    return result;
+  }
+
+  static async getByPinterestId(id) {
+    const result = await db.one(`select * from pins where pin_id=$1`, [id]);
+    return Pin.from(result);
+  }
+
   async save() {
     const {id} = await db.one(`
 insert into pins

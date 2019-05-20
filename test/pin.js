@@ -59,4 +59,36 @@ describe(`Model: Pin`, () => {
       expect(thePin.img).to.equal(img);      
     });
   });
+  describe(`#deleteById`, () => {
+    it(`should not be in the database after deleting`, async () => {
+      const pin_id = 'abc123';
+      const note = 'it was a good pin';
+      const link = 'https://not-real.com';
+      const img = 'https://not-real.com/example.png';
+      const p = new Pin(pin_id, note, link, img);
+
+      const id = await p.save();
+
+      const result = await Pin.deleteById(id);
+      expect(() => {
+        Pin.getById(id);
+      }).to.Throw;
+    });
+  });
+  describe(`#getByPinterestId`, () => {
+    it(`should get one pin`, async () => {
+      const pin_id = String((new Date()).getTime());
+      const note = 'it was a good pin';
+      const link = 'https://not-real.com';
+      const img = 'https://not-real.com/example.png';
+      const p = new Pin(pin_id, note, link, img);
+
+      await p.save();
+      const thePin = await Pin.getByPinterestId(pin_id);
+      expect(thePin.pin_id).to.equal(pin_id);
+      expect(thePin.note).to.equal(note);
+      expect(thePin.link).to.equal(link);
+      expect(thePin.img).to.equal(img);            
+    });
+  });
 });
