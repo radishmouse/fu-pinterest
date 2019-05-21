@@ -14,7 +14,7 @@ module.exports = class Board {
   }
 
   static async getAll() {
-    const results = db.any(`select * from boards`);
+    const results = await db.any(`select * from boards`);
     return results.map(Board.from);
   }
 
@@ -42,8 +42,13 @@ module.exports = class Board {
   }
 
   static async getByPinterestId(id) {
-    const result = await db.one(`select * from boards where board_id=$1`, [id]);
-    return Board.from(result);
+    try {      
+      const result = await db.one(`select * from boards where board_id=$1`, [id]);
+      return Board.from(result);
+    } catch(err) {
+      console.log(err);
+      return null;
+    }
   }
 
   get pins() {

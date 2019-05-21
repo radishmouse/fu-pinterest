@@ -1,12 +1,14 @@
 const express = require('express');
-const api = require('../api');
 const requireToken = require('../lib/require-token');
 const extractToken = require('../lib/extract-token');
-const extractImage = require('../lib/extract-image');
-const resolveUrl = require('../lib/resolve-url');
+
+const {
+  getBoards
+} = require('../controllers/pinterest');
 
 const getBoardsRoute = async (req, res) => {
-  const boards = await api(req.token).boards();
+  const boards = await getBoards(req.token);
+  console.log(`Sending ${boards.length} boards as JSON`);
   res.json(boards);
 };
 

@@ -11,21 +11,28 @@ const urlsWith = (accessToken) => (
   }
 );
 
-const returnData = ({data}) => data;
+// Wow. This is ridiculous.
+const extractData = ({data}) => data.data;
+const handleError = (err) => {
+  console.log(err);
+};
 
 const api = (accessToken) => (
   {
     boards: () => (
       axios.get(urlsWith(accessToken).boards())
-        .then(returnData)
+        .then(extractData)
+        .catch(handleError)
     ),
     pins: (id) => (
       axios.get(urlsWith(accessToken).pinsForBoard(id))
-        .then(returnData)
+        .then(extractData)
+        .catch(handleError)
     ),
     pin: (id) => (
       axios.get(urlsWith(accessToken).pin(id))
-        .then(returnData)
+        .then(extractData)
+        .catch(handleError)
     )
     
   }
