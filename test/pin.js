@@ -81,8 +81,8 @@ describe(`Model: Pin`, () => {
       const id = await p.save();
 
       const result = await Pin.deleteById(id);
-      expect(() => {
-        Pin.getById(id);
+      expect(async () => {
+        await Pin.getById(id);
       }).to.Throw;
     });
   });
