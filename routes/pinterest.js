@@ -3,29 +3,25 @@ const requireToken = require('../lib/require-token');
 const extractToken = require('../lib/extract-token');
 
 const {
-  getBoards
+  getBoards,
+  getPinsForBoard,
+  getPinInfo
 } = require('../controllers/pinterest');
 
 const getBoardsRoute = async (req, res) => {
   const boards = await getBoards(req.token);
-  console.log(`Sending ${boards.length} boards as JSON`);
   res.json(boards);
 };
 
 const getPinsForBoardRoute = async (req, res) => {
   const {id} = req.params;
-  const pins = await api(req.token).pins(id);
-  res.json(pins);
+  const {board, pins} = await getPinsForBoard(id, req.token);
+  res.json({board, pins});
 };
 
 const getPinInfoRoute = async (req, res) => {
   const {id} = req.params;
-  const {data} = await api(req.token).pin(id);
-  const pin = {
-    ...data,
-    img: await extractImage(data.url, '.GrowthUnauthPinImage img'),
-    link: await resolveUrl(data.link)
-  };
+  const {pin} = await getPinInfo(id, req.token);
   res.json(pin);
 };
 
