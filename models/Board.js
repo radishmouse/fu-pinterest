@@ -14,26 +14,38 @@ module.exports = class Board {
   }
 
   static async getAll() {
-    const results = await db.any(`select * from boards`);
-    return results.map(Board.from);
+    try {      
+      const results = await db.any(`select * from boards`);
+      return results.map(Board.from);
+    } catch(err) {
+      return [];
+    }
   }
 
   static async getAllAsObject() {
-    return await Board.getAll().reduce((acc, p) => {
-      const simpleP = {
-        ...p
-      };
-      delete simpleP['board_id'];
-      return {
-        ...acc,
-        [p.board_id]: simpleP
-      };
-    }, {});
+    try {      
+      return await Board.getAll().reduce((acc, p) => {
+        const simpleP = {
+          ...p
+        };
+        delete simpleP['board_id'];
+        return {
+          ...acc,
+          [p.board_id]: simpleP
+        };
+      }, {});
+    } catch(err) {
+      return {};
+    }
   }
 
   static async getById(id) {
-    const result = await db.one(`select * from boards where id=$1`, [id]);
-    return Board.from(result);
+    try {      
+      const result = await db.one(`select * from boards where id=$1`, [id]);
+      return Board.from(result);
+    } catch(err) {
+      return null;
+    }
   }
 
   static async deleteById(id) {
@@ -52,7 +64,12 @@ module.exports = class Board {
   }
 
   get pins() {
-    return Pin.getByBoardId(this.id);
+    try {
+      return Pin.getByBoardId(this.id);      
+    } catch(err) {
+      return [];
+    }
+
   }
 
   async save() {

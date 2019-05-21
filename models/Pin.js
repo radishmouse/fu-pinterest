@@ -17,48 +17,72 @@ module.exports = class Pin {
   }
 
   static async getAll() {
-    const results = db.any(`select * from pins`);
-    return results.map(Pin.from);
+    try {      
+      const results = db.any(`select * from pins`);
+      return results.map(Pin.from);
+    } catch(err) {
+      return [];
+    }
   }
 
   static async getAllAsObject() {
-    return await Pin.getAll().reduce((acc, p) => {
-      const simpleP = {
-        ...p
-      };
-      delete simpleP['pin_id'];
-      return {
-        ...acc,
-        [p.pin_id]: simpleP
-      };
-    }, {});
+    try {      
+      return await Pin.getAll().reduce((acc, p) => {
+        const simpleP = {
+          ...p
+        };
+        delete simpleP['pin_id'];
+        return {
+          ...acc,
+          [p.pin_id]: simpleP
+        };
+      }, {});
+    } catch(err) {
+      return {};
+    }
   }
 
   static async getById(id) {
-    const result = await db.one(`select * from pins where id=$1`, [id]);
-    return Pin.from(result);
+    try {      
+      const result = await db.one(`select * from pins where id=$1`, [id]);
+      return Pin.from(result);
+    } catch(err) {
+      return null;
+    }
   }
 
   static async getByBoardId(id) {
-    const results = await db.any(`select * from pins where board_id=$1`, [id]);
-    return results.length > 0 ? results.map(Pin.from) : [];
+    try {      
+      const results = await db.any(`select * from pins where board_id=$1`, [id]);
+      return results.length > 0 ? results.map(Pin.from) : [];
+    } catch(err) {
+      return [];
+    }
   }
   
-  static async deleteById(id) {
+  static async deleteById(id) {    
     const result = await db.result(`delete from pins where id=$1`, [id]);
     return result;
   }
 
   static async getByPinterestId(id) {
-    const result = await db.one(`select * from pins where pin_id=$1`, [id]);
-    return Pin.from(result);
+    try {      
+      const result = await db.one(`select * from pins where pin_id=$1`, [id]);
+      return Pin.from(result);
+    } catch(err) {
+      return null;
+    }
   }
 
   static async getByPinterestBoardId(id) {
-    const results = await db.any(`
+    try {      
+      const results = await db.any(`
 select * from pins where board_id = (select id from boards where board_id=$1)
 `, [id]);
-    return results.length > 0 ? results.map(Pin.from) : [];
+      return results.length > 0 ? results.map(Pin.from) : [];
+    } catch(err) {
+      return [];
+    }
   }
 
   async save() {
