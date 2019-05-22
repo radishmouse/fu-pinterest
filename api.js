@@ -24,14 +24,14 @@ const handleError = (err) => {
 const getRealPinInfo = async (data) => {
   const pin = {
     ...data,
-    img: await extractImage(data.url, '.GrowthUnauthPinImage img'),
-    link: data.link ? await resolveUrl(data.link) : ''
+    // img: await extractImage(data.url, '.GrowthUnauthPinImage img'),
+    // link: data.link ? await resolveUrl(data.link) : ''
   };
   return pin;
 };
 
 const convertPins = (pinArray) => {
-  return pinArray.map(async p => await getRealPinInfo(p))  ;
+  return Promise.all(pinArray.map(async p => await getRealPinInfo(p)))  ;
 };
 
 
@@ -45,13 +45,13 @@ const api = (accessToken) => (
     pins: (id) => (
       axios.get(urlsWith(accessToken).pinsForBoard(id))
         .then(extractData)
-        .then(convertPins)
+        // .then(convertPins)
         .catch(handleError)
     ),
     pin: (id) => (
       axios.get(urlsWith(accessToken).pin(id))
         .then(extractData)
-        .then(getRealPinInfo)
+        // .then(getRealPinInfo)
         .catch(handleError)
     )
     
