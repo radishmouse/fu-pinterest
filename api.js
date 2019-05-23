@@ -1,15 +1,15 @@
 require('dotenv').config();
 const axios = require('axios');
 
-const extractImage = require('./lib/extract-image');
-const resolveUrl = require('./lib/resolve-url');
+// const extractImage = require('./lib/extract-image');
+// const resolveUrl = require('./lib/resolve-url');
 
 const URL = `https://api.pinterest.com/v1`;
 
 const urlsWith = (accessToken) => (
   {
     boards: () => `${URL}/me/boards/?access_token=${accessToken}`,
-    pinsForBoard: (id) => `${URL}/boards/${id}/pins/?access_token=${accessToken}`,
+    pinsForBoard: (id, cursor) => `${URL}/boards/${id}/pins/?access_token=${accessToken}&fields=id%2Clink%2Cnote%2Curl%2Cimage%2Coriginal_link&cursor=${cursor}`,
     pin: (id) => `${URL}/pins/${id}/?access_token=${accessToken}`,    
   }
 );
@@ -34,6 +34,22 @@ const convertPins = (pinArray) => {
   return Promise.all(pinArray.map(async p => await getRealPinInfo(p)))  ;
 };
 
+const traversePages = (token, id) => async ({data}) => {
+  console.log(`inside of traversePages`);
+  let additionalData = [];
+  // collects the results from this page,
+  // grabs data from the next page.
+  if (data.page && data.page.cursor) {
+    console.log('...found a cursor');
+    additionalData = await api(token).pins(id, data.page.cursor);
+  }
+
+  return [
+    ...data.data,
+    ...additionalData
+  ];    
+};
+
 
 const api = (accessToken) => (
   {
@@ -42,9 +58,10 @@ const api = (accessToken) => (
         .then(extractData)
         .catch(handleError)
     ),
-    pins: (id) => (
-      axios.get(urlsWith(accessToken).pinsForBoard(id))
-        .then(extractData)
+    pins: (id, cursor='') => (
+      axios.get(urlsWith(accessToken).pinsForBoard(id, cursor))
+        // .then(extractData)
+        .then(traversePages(accessToken, id))
         // .then(convertPins)
         .catch(handleError)
     ),
