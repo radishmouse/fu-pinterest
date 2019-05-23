@@ -37,14 +37,21 @@ const updatePinsForBoard = async (board_id, token) => {
   if (pins) {
     console.log('here is a pin');
     console.log(pins[0]);
-    for (let {url, note, link, id:pin_id, img} of pins) {
+    for (let {
+      url,
+      image,
+      original_link:link,
+      note,
+      // we don't care about the pinterest link
+      id:pin_id,    
+    } of pins) {
       // using the pinterest id, see if it's in the database.
       const p = Pin.from({
         board_id: board.id,
         pin_id,
         note,
         link,
-        img        
+        img: image.original.url
       });
       const existingPin = await Pin.getByPinterestId(pin_id);
       if (!existingPin) {
@@ -68,7 +75,7 @@ exports.getBoards = async (token) => {
   } else {
     // turning off because I'm burning through my api calls
     // update them anyway, and ignore the return val
-    // setTimeout(updateBoards.bind(null, token), 0);
+    setTimeout(updateBoards.bind(null, token), 0);
   }
   return boards;
 };

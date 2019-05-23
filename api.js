@@ -35,12 +35,10 @@ const convertPins = (pinArray) => {
 };
 
 const traversePages = (token, id) => async ({data}) => {
-  console.log(`inside of traversePages`);
-  let additionalData = [];
   // collects the results from this page,
   // grabs data from the next page.
+  let additionalData = [];
   if (data.page && data.page.cursor) {
-    console.log('...found a cursor');
     additionalData = await api(token).pins(id, data.page.cursor);
   }
 
@@ -60,9 +58,11 @@ const api = (accessToken) => (
     ),
     pins: (id, cursor='') => (
       axios.get(urlsWith(accessToken).pinsForBoard(id, cursor))
-        // .then(extractData)
+        // .then(extractData) // we don't want this, since we need
+        // other keys
         .then(traversePages(accessToken, id))
-        // .then(convertPins)
+        // .then(convertPins) // no longer needed, since not manually
+        // resolving imgs and urls
         .catch(handleError)
     ),
     pin: (id) => (
